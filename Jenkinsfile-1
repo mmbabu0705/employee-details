@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mmbabu0705/employee-details.git']])
+            }
+        }
+        stage('Build the code') {
+            steps {
+               sh 'mvn compile'
+            }
+        }
+        stage('test the code') {
+            steps {
+               sh 'mvn test'
+            }
+        }
+        stage('package the code') {
+            steps {
+               sh 'mvn package'
+            }
+        }
+        stage('Deploy to tomcat server') {
+            steps {
+               deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat_cred', path: '', url: 'http://65.0.45.254:8080/')], contextPath: null, war: '**/*.war'
+            }
+        }
+    }
+}
