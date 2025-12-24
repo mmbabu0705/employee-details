@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git Checkout SCM') {
+            steps {
+                git 'https://github.com/mmbabu0705/employee-details.git'
+            }
+        }
+        stage('Compile the code') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+        stage('Test the code') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('Package the code') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        stage('Dploy the package tomcat webserver') {
+            steps {
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat_cred', path: '', url: 'http://43.204.97.101:8080/')], contextPath: null, war: '**/*.war'
+            }
+        }
+    }
+}
